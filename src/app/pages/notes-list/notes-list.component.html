@@ -14,7 +14,14 @@
   </div>
 
   <div class="notes-list">
-    <app-note-card></app-note-card>
+    <app-note-card
+      (delete)="onDelete(idx)"
+      *ngFor="let note of notes; index as idx"
+      [body]="note.body"
+      [link]="idx.toString()"
+      [title]="note.title"></app-note-card>
   </div>
+
+  <button class="button floating-add-button is-primary" routerLink="new">+ Add</button>
 
 </div>
