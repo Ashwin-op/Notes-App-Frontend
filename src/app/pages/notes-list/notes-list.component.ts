@@ -82,6 +82,7 @@ import {animate, query, stagger, style, transition, trigger} from "@angular/anim
 export class NotesListComponent implements OnInit {
 
   notes: Note[] = new Array<Note>();
+  filteredNotes: Note[] = new Array<Note>();
 
   constructor(private notesService: NotesService) {
   }
@@ -89,10 +90,56 @@ export class NotesListComponent implements OnInit {
   ngOnInit(): void {
     // Retrieve all notes from NotesService
     this.notes = this.notesService.getAll();
+    this.filteredNotes = this.notes;
   }
 
   onDelete(id: number) {
     this.notesService.delete(id);
   }
 
+  search(target: EventTarget | null) {
+    let query = (target as HTMLInputElement).value.toLowerCase().trim();
+
+    let allResults: Note[] = new Array<Note>();
+    // Split up the search query into individual words
+    let terms: string[] = query.split(' ');
+    // Remove duplicate search terms
+    terms = [...new Set(terms)];
+    // Compile all relevant results
+    terms.forEach(term => allResults = [...allResults, ...this.relevantNotes(term)]);
+    // Remove duplicates
+    this.filteredNotes = [...new Set(allResults)];
+    // Sort by relevancy
+    // this.sortByRelevancy(allResults);
+  }
+
+  relevantNotes(query: string): Array<Note> {
+    query = query.toLowerCase().trim();
+    return this.notes.filter(note => {
+      if (note.title && note.title.toLowerCase().includes(query)) {
+        return true;
+      }
+      return !!(note.body && note.body.toLowerCase().includes(query));
+    });
+  }
+
+  // sortByRelevancy(searchResults: Note[]) {
+  //   // This method will calculate the relevancy of a note based on the number of times it appears in the search results
+  //   let noteCountObj: Object = {}; // format - key:value => NoteId:number (note object id : count)
+  //
+  //   searchResults.forEach(note => {
+  //     if (noteCountObj[note._id]) {
+  //       noteCountObj[note._id] += 1;
+  //     } else {
+  //       noteCountObj[note._id] = 1;
+  //     }
+  //   });
+  //
+  //   this.filteredNotes = this.filteredNotes.sort((a: Note, b: Note) => {
+  //     let aCount = noteCountObj[a._id];
+  //     let bCount = noteCountObj[b._id];
+  //
+  //     return bCount - aCount;
+  //   });
+  // }
 }
