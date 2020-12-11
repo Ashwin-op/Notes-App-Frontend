@@ -12,8 +12,7 @@ import {NotesService} from "../../shared/notes.service";
 export class NoteDetailsComponent implements OnInit {
 
   note!: Note;
-  noteId!: number;
-  newNote!: boolean;
+  new!: boolean;
 
   constructor(private notesService: NotesService, private router: Router, private activatedRoute: ActivatedRoute) {
   }
@@ -23,24 +22,27 @@ export class NoteDetailsComponent implements OnInit {
     this.activatedRoute.params.subscribe((params: Params) => {
       this.note = new Note();
       if (params.id) {
-        this.note = this.notesService.get(params.id);
-        this.noteId = params.id;
-        this.newNote = false;
+        // @ts-ignore
+        this.notesService.get(params.id).subscribe((note: Note) => {
+          this.note = note;
+        });
+        this.new = false;
       } else {
-        this.newNote = true;
+        this.new = true;
       }
     })
   }
 
   onSubmit(form: NgForm) {
-    if (this.newNote) {
-      // Save the note
-      this.notesService.add(form.value);
+    if (this.new) {
+      // Save the note and Redirect to homepage
+      this.notesService.add(form.value).subscribe(() => this.router.navigateByUrl('/'))
     } else {
-      this.notesService.update(this.noteId, form.value);
+      this.note.title = form.value.title;
+      this.note.body = form.value.body;
+
+      this.notesService.update(this.note).subscribe(() => this.router.navigateByUrl('/'))
     }
-    // Redirect to homepage
-    this.router.navigateByUrl('/');
   }
 
   onCancel() {

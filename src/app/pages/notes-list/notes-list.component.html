@@ -4,7 +4,7 @@
     <div class="field">
       <p class="control has-icons-left">
         <label>
-          <input (keyup)="search($event.target)" class="input" placeholder="Search" type="text"/>
+          <input #filterInput (keyup)="search($event.target)" class="input" placeholder="Search" type="text"/>
         </label>
         <span class="icon is-small is-left">
           <i class="fas fa-search"></i>
@@ -15,12 +15,12 @@
 
   <div [@listAnim] class="notes-list">
     <app-note-card
-      (delete)="onDelete(idx)"
-      *ngFor="let note of filteredNotes; index as idx"
-      [body]="note.body"
-      [link]="idx.toString()"
+      (delete)="onDelete(note)"
+      *ngFor="let note of filteredNotes;"
       [@itemAnim]
-      [title]="note.title"></app-note-card>
+      [link]="note._id"
+      [body]="note.body"
+      [title]=" note.title"></app-note-card>
   </div>
 
   <button class="button floating-add-button is-primary" routerLink="new">+ Add</button>

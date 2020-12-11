@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {animate, query, stagger, style, transition, trigger} from "@angular/animations";
 import {Note} from "../../shared/note.model";
 import {NotesService} from "../../shared/notes.service";
-import {animate, query, stagger, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'app-notes-list',
@@ -84,17 +84,27 @@ export class NotesListComponent implements OnInit {
   notes: Note[] = new Array<Note>();
   filteredNotes: Note[] = new Array<Note>();
 
+  @ViewChild('filterInput') filterInputElRef!: ElementRef<HTMLInputElement>;
+
   constructor(private notesService: NotesService) {
   }
 
   ngOnInit(): void {
     // Retrieve all notes from NotesService
-    this.notes = this.notesService.getAll();
-    this.filteredNotes = this.notes;
+    // @ts-ignore
+    this.notesService.getAll().subscribe((notes: Note[]) => {
+      this.notes = notes;
+      console.log(this.notes);
+      this.search(this.filterInputElRef.nativeElement);
+    })
   }
 
-  onDelete(id: number) {
-    this.notesService.delete(id);
+  onDelete(note: Note) {
+    this.notesService.delete(note._id).subscribe(() => {
+      // Remove the note from the notes array
+      this.notes.splice(this.notes.indexOf(note), 1);
+      this.search(this.filterInputElRef.nativeElement);
+    })
   }
 
   search(target: EventTarget | null) {
@@ -110,7 +120,7 @@ export class NotesListComponent implements OnInit {
     // Remove duplicates
     this.filteredNotes = [...new Set(allResults)];
     // Sort by relevancy
-    // this.sortByRelevancy(allResults);
+    this.sortByRelevancy(allResults);
   }
 
   relevantNotes(query: string): Array<Note> {
@@ -123,23 +133,22 @@ export class NotesListComponent implements OnInit {
     });
   }
 
-  // sortByRelevancy(searchResults: Note[]) {
-  //   // This method will calculate the relevancy of a note based on the number of times it appears in the search results
-  //   let noteCountObj: Object = {}; // format - key:value => NoteId:number (note object id : count)
-  //
-  //   searchResults.forEach(note => {
-  //     if (noteCountObj[note._id]) {
-  //       noteCountObj[note._id] += 1;
-  //     } else {
-  //       noteCountObj[note._id] = 1;
-  //     }
-  //   });
-  //
-  //   this.filteredNotes = this.filteredNotes.sort((a: Note, b: Note) => {
-  //     let aCount = noteCountObj[a._id];
-  //     let bCount = noteCountObj[b._id];
-  //
-  //     return bCount - aCount;
-  //   });
-  // }
+  sortByRelevancy(searchResults: Note[]) {
+    // This method will calculate the relevancy of a note based on the number of times it appears in the search results
+    let noteCountObj: Object = {}; // format - key:value => NoteId:number (note object id : count)
+
+    searchResults.forEach(note => {
+      // @ts-ignore
+      if (noteCountObj[note._id]) {
+        // @ts-ignore
+        noteCountObj[note._id] += 1;
+      } else {
+        // @ts-ignore
+        noteCountObj[note._id] = 1;
+      }
+    });
+
+    // @ts-ignore
+    this.filteredNotes = this.filteredNotes.sort((a: Note, b: Note) => noteCountObj[b._id] - noteCountObj[a._id]);
+  }
 }

@@ -3,6 +3,8 @@ import {RouterModule, Routes} from '@angular/router';
 import {NotesListComponent} from "./pages/notes-list/notes-list.component";
 import {MainLayoutComponent} from "./pages/main-layout/main-layout.component";
 import {NoteDetailsComponent} from "./pages/note-details/note-details.component";
+import {LoginComponent} from "./pages/login/login.component";
+import {SignupComponent} from "./pages/signup/signup.component";
 
 const routes: Routes = [
   {
@@ -16,6 +18,14 @@ const routes: Routes = [
       {
         path: 'new',
         component: NoteDetailsComponent
+      },
+      {
+        path: 'login',
+        component: LoginComponent
+      },
+      {
+        path: 'signup',
+        component: SignupComponent
       },
       {
         path: ':id',

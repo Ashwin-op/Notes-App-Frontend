@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Note} from "./note.model";
+import {WebRequestService} from "./web-request.service";
 
 @Injectable({
   providedIn: 'root'
@@ -7,27 +8,28 @@ import {Note} from "./note.model";
 export class NotesService {
   private _notes: Note[] = new Array<Note>();
 
-  constructor() {
+  constructor(private webReqService: WebRequestService) {
   }
 
-  get(id: number): Note {
-    return this._notes[id];
+  getAll() {
+    return this.webReqService.get('/notes');
   }
 
-  getAll(): Note[] {
-    return this._notes;
+  get(id: string) {
+    return this.webReqService.get('/notes/' + id);
   }
 
-  add(note: Note): number {
-    // This method will add a new note to the notes array and return the id (index) of the added note
-    return this._notes.push(note) - 1;
+  add(note: Note) {
+    // this method will add a note to the notes array
+    return this.webReqService.post('/notes', note);
   }
 
-  update(id: number, note: Note) {
-    this._notes[id] = note;
+  update(note: Note) {
+    console.log(note);
+    return this.webReqService.patch('/notes/' + note._id, note);
   }
 
-  delete(id: number) {
-    this._notes.splice(id, 1);
+  delete(id: string) {
+    return this.webReqService.delete('/notes/' + id);
   }
 }
