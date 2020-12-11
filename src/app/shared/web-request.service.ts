@@ -6,7 +6,7 @@ import {HttpClient} from "@angular/common/http";
 })
 export class WebRequestService {
 
-  readonly ROOT_URI: string = 'http://localhost:3000';
+  readonly ROOT_URI: string = 'https://note-mate0.herokuapp.com';
 
   constructor(private http: HttpClient) {
   }
