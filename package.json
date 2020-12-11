@@ -1,6 +1,8 @@
 {
   "name": "notes-app-frontend",
-  "version": "0.0.0",
+  "description": "A basic notes app with CRUD, Search and Animations ✨",
+  "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -9,6 +11,10 @@
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
+  "author": {
+    "name": "Ashwin"
+  },
+  "homepage": "https://github.com/Ashwin-op/Notes-App-Frontend",
   "private": true,
   "dependencies": {
     "@angular/animations": "~11.0.3",
